@@ -66,6 +66,15 @@
             {{ item.is_staff ? 'Admin' : 'User' }}
           </v-chip>
         </template>
+        <template v-slot:item.actions="{ item }">
+          <v-btn
+            icon="mdi-delete"
+            size="small"
+            variant="text"
+            color="error"
+            @click="confirmDelete(item)"
+          ></v-btn>
+        </template>
       </v-data-table>
     </v-card>
   </div>
@@ -75,6 +84,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import axios from 'axios'
 import { useAuthStore } from '../store/auth'
+import Swal from 'sweetalert2'
 
 const users = ref([])
 const loading = ref(true)
@@ -99,6 +109,7 @@ const headers = [
   { title: 'First Name', key: 'first_name' },
   { title: 'Last Name', key: 'last_name' },
   { title: 'Role', key: 'is_staff' },
+  { title: 'Actions', key: 'actions', sortable: false },
 ]
 
 const fetchUsers = async () => {
@@ -126,11 +137,61 @@ const saveUser = async () => {
     // Reset form
     Object.keys(form).forEach(key => form[key] = key === 'is_staff' ? false : '')
     await fetchUsers()
+    
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'User created successfully.',
+      timer: 2000,
+      showConfirmButton: false
+    })
   } catch (err) {
-    error.value = err.response?.data?.detail || "Failed to create user. Please check if the username already exists."
+    error.value = err.response?.data?.detail || "Failed to create user."
     console.error("Error creating user", err)
   } finally {
     saving.value = false
+  }
+}
+
+const confirmDelete = async (user) => {
+  if (user.id === authStore.user?.id) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'You cannot delete your own account!',
+    })
+    return
+  }
+
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: `You are about to delete user "${user.username}". This action cannot be undone!`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!'
+  })
+
+  if (result.isConfirmed) {
+    try {
+      await axios.delete(`${import.meta.env.VITE_BE_API_URL}/api/users/${user.id}/`, {
+        headers: { Authorization: `Bearer ${authStore.token}` }
+      })
+      await fetchUsers()
+      Swal.fire(
+        'Deleted!',
+        'The user has been deleted.',
+        'success'
+      )
+    } catch (err) {
+      console.error("Error deleting user", err)
+      Swal.fire(
+        'Error!',
+        'Failed to delete the user. Please try again.',
+        'error'
+      )
+    }
   }
 }
 

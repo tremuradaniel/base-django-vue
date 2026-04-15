@@ -10,7 +10,7 @@
       </v-list>
       <v-divider></v-divider>
       <v-list density="compact" nav>
-        <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard" to="/" value="dashboard"></v-list-item>
+        <v-list-item prepend-icon="mdi-view-dashboard" title="Dashboard" :to="{ name: 'Home' }" value="dashboard"></v-list-item>
         <v-list-item prepend-icon="mdi-account-group" title="Users" value="users"></v-list-item>
         <v-list-item prepend-icon="mdi-cog" title="Settings" value="settings"></v-list-item>
         <v-list-item prepend-icon="mdi-logout" title="Logout" @click="handleLogout" value="logout" class="mt-auto" color="error"></v-list-item>

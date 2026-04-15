@@ -8,7 +8,7 @@
         
         <v-spacer></v-spacer>
 
-        <v-btn to="/dashboard" variant="text" class="mr-2">Home</v-btn>
+        <v-btn :to="{ name: 'UserDashboard' }" variant="text" class="mr-2">Home</v-btn>
         <v-btn variant="text" class="mr-4">Profile</v-btn>
 
         <v-menu offset-y>

@@ -34,6 +34,12 @@
                   Authenticate
                 </v-btn>
               </v-card-actions>
+              <v-divider class="my-4"></v-divider>
+              <div class="text-center">
+                <v-btn :to="{ name: 'UserLogin' }" variant="text" size="small" prepend-icon="mdi-account-arrow-left">
+                  Normal User Sign In
+                </v-btn>
+              </div>
             </v-form>
           </v-card-text>
         </v-card>
@@ -60,7 +66,7 @@ const handleLogin = async () => {
   try {
     await authStore.login(username.value, password.value)
     if (authStore.user?.is_staff) {
-        router.push('/admin/dashboard')
+        router.push({ name: 'AdminDashboard' })
     } else {
         authStore.logout()
         error.value = 'Access Denied: Administrator privileges required.'

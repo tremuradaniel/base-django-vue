@@ -2,28 +2,18 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../store/auth'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import UserLayout from '../layouts/UserLayout.vue'
-import AdminLoginView from '../views/AdminLoginView.vue'
-import UserLoginView from '../views/UserLoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import UserDashboard from '../views/UserDashboard.vue'
+import authRoutes from './auth'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: { render: () => {} }, // Dummy component for guard to handle redirect
+    component: { render: () => {} },
     meta: { requiresAuth: true }
   },
-  {
-    path: '/login',
-    name: 'UserLogin',
-    component: UserLoginView
-  },
-  {
-    path: '/admin/login',
-    name: 'AdminLogin',
-    component: AdminLoginView
-  },
+  ...authRoutes,
   {
     path: '/dashboard',
     component: UserLayout,
@@ -58,31 +48,30 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   
-  // Handle root path redirect
   if (to.path === '/') {
     if (!authStore.isAuthenticated) {
-      next('/login')
+      next({ name: 'UserLogin' })
       return
     }
     if (!authStore.user) {
       await authStore.fetchUser()
     }
-    next(authStore.user?.is_staff ? '/admin/dashboard' : '/dashboard')
+    next({ name: authStore.user?.is_staff ? 'AdminDashboard' : 'UserDashboard' })
     return
   }
 
-  // Prevent logged in users from visiting login pages
-  if (authStore.isAuthenticated && (to.path === '/login' || to.path === '/admin/login')) {
+  if (authStore.isAuthenticated && (to.name === 'UserLogin' || to.name === 'AdminLogin')) {
     if (!authStore.user) {
         await authStore.fetchUser()
     }
-    next(authStore.user?.is_staff ? '/admin/dashboard' : '/dashboard')
+    next({ name: authStore.user?.is_staff ? 'AdminDashboard' : 'UserDashboard' })
     return
   }
 
   if (to.meta.requiresAuth) {
     if (!authStore.isAuthenticated) {
-      next(to.path.includes('/admin') || to.meta.requiresAdmin ? '/admin/login' : '/login')
+      const isAdminPath = to.path.includes('/admin') || to.meta.requiresAdmin
+      next({ name: isAdminPath ? 'AdminLogin' : 'UserLogin' })
       return
     }
 
@@ -91,7 +80,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (to.meta.requiresAdmin && !authStore.user?.is_staff) {
-      next('/dashboard')
+      next({ name: 'UserDashboard' })
       return
     }
   }

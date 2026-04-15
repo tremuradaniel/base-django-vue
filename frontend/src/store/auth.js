@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(username, password) {
       try {
-        const response = await axios.post('http://localhost:8000/api/token/', {
+        const response = await axios.post(`${import.meta.env.BE_API_URL}/api/token/`, {
           username,
           password
         });
@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
     async fetchUser() {
       if (!this.token) return;
       try {
-        const response = await axios.get('http://localhost:8000/api/users/me/', {
+        const response = await axios.get(`${import.meta.env.BE_API_URL}/api/users/me/`, {
           headers: { Authorization: `Bearer ${this.token}` }
         });
         this.user = response.data;

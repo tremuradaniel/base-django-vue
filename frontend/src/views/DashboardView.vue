@@ -42,7 +42,7 @@ const headers = [
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`${import.meta.env.BE_API_URL}/api/users/`, {
+    const response = await axios.get(`${import.meta.env.VITE_BE_API_URL}/api/users/`, {
       headers: { Authorization: `Bearer ${authStore.token}` }
     })
     users.value = response.data

@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(username, password) {
       try {
-        const response = await axios.post(`${import.meta.env.BE_API_URL}/api/token/`, {
+        const response = await axios.post(`${import.meta.env.VITE_BE_API_URL}/api/token/`, {
           username,
           password
         });
@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
     async fetchUser() {
       if (!this.token) return;
       try {
-        const response = await axios.get(`${import.meta.env.BE_API_URL}/api/users/me/`, {
+        const response = await axios.get(`${import.meta.env.VITE_BE_API_URL}/api/users/me/`, {
           headers: { Authorization: `Bearer ${this.token}` }
         });
         this.user = response.data;
@@ -37,10 +37,11 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     logout() {
+      const wasAdmin = this.user?.is_staff || router.currentRoute.value.path.includes('/admin');
       this.token = null;
       this.user = null;
       localStorage.removeItem('token');
-      router.push('/login');
+      router.push(wasAdmin ? '/admin/login' : '/login');
     }
   }
 })

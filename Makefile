@@ -1,4 +1,4 @@
-.PHONY: setup up down build shell-backend shell-frontend migrations migrate logs check-db
+.PHONY: setup up down build shell-backend shell-frontend migrations migrate logs check-db createsuperuser
 
 setup:
 	@echo "Building containers..."
@@ -33,3 +33,9 @@ migrate:
 
 logs:
 	docker compose logs -f
+
+
+# django
+
+createsuperuser:
+	docker compose exec backend python manage.py createsuperuser

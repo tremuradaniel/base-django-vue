@@ -1,4 +1,4 @@
-.PHONY: setup up down build shell-backend shell-frontend migrations migrate logs check-db createsuperuser
+.PHONY: setup up down build shell-backend shell-frontend migrations migrate logs check-db createsuperuser mailpit
 
 setup:
 	@echo "Building containers..."
@@ -39,3 +39,6 @@ logs:
 
 createsuperuser:
 	docker compose exec backend python manage.py createsuperuser
+
+mailpit:
+	open http://localhost:8026

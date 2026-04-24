@@ -29,8 +29,21 @@ services:
       - DB_NAME=${DB_NAME:-app_db}
       - DB_USER=${DB_USER:-user}
       - DB_PASSWORD=${DB_PASSWORD:-password}
+      - EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+      - EMAIL_HOST=mailpit
+      - EMAIL_PORT=1025
+      - EMAIL_USE_TLS=False
     depends_on:
       - db
+      - mailpit
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: app_mailpit
+    restart: always
+    ports:
+      - "1026:1025"  # SMTP
+      - "8026:8025"  # Web UI
 
   frontend:
     build:

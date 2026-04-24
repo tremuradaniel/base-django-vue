@@ -36,6 +36,12 @@
               <v-btn color="primary" type="submit" variant="flat" block size="large" class="mt-6" :loading="loading">
                 Sign In
               </v-btn>
+
+              <div class="text-center mt-4">
+                <router-link :to="{ name: 'ForgotPassword' }" class="text-primary text-decoration-none text-body-2">
+                  Forgot your password?
+                </router-link>
+              </div>
             </v-form>
           </v-card-text>
         </v-card>
